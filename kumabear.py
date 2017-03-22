@@ -8,7 +8,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
-from flask_mail import Mail, Message
+# from flask_mail import Mail, Message
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -55,12 +55,12 @@ class User(db.Model):
         return '<User %r>' % self.username
 
 
-def send_email(to, subject, template, **kwargs):
-    msg = Message(app.config['KUMABEAR_MAIL_SUBJECT_PREFIX'] + ' ' + subject,
-                  sender=app.config['KUMABEAR_MAIL_SENDER'], recipients=[to])
-    msg.body = render_template(template + '.txt', **kwargs)
-    msg.html = render_template(template + '.html', **kwargs)
-    mail.send(msg)
+# def send_email(to, subject, template, **kwargs):
+#     msg = Message(app.config['KUMABEAR_MAIL_SUBJECT_PREFIX'] + ' ' + subject,
+#                   sender=app.config['KUMABEAR_MAIL_SENDER'], recipients=[to])
+#     msg.body = render_template(template + '.txt', **kwargs)
+#     msg.html = render_template(template + '.html', **kwargs)
+#     mail.send(msg)
 
 
 class NameForm(FlaskForm):
@@ -93,9 +93,9 @@ def index():
             user = User(username=form.name.data)
             db.session.add(user)
             session['known'] = False
-            if app.config['KUMABEAR_ADMIN']:
-                send_email(app.config['KUMABEAR_ADMIN'], 'New User',
-                           'mail/new_user', user=user)
+            # if app.config['KUMABEAR_ADMIN']:
+            #     send_email(app.config['KUMABEAR_ADMIN'], 'New User',
+            #                'mail/new_user', user=user)
         else:
             session['known'] = True
         session['name'] = form.name.data
