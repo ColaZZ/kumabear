@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 
-from flask import Flask, render_template, session, redirect, url_for, flash
+from flask import Flask, render_template, session, redirect, url_for
 from flask_script import Manager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
@@ -52,12 +52,20 @@ class NameForm(FlaskForm):
 def index():
     form = NameForm()
     if form.validate_on_submit():
-        old_name = session.get('name')
-        if old_name is not None and old_name != form.name.data:
-            flash(u'看起来你改变了名字')
+        user = User.query.filter_by(username=form.name.data).first()
+        if user is None:
+            user = User(username = form.name.data)
+            db.session.add(user)
+            session['known'] = False
+        else:
+            session['known'] = True
         session['name'] = form.name.data
         return redirect(url_for('index'))
-    return render_template('index.html', form=form, name=session.get('name'))
+    return render_template('index.html',
+                           form = form,
+                           name = session.get('name'),
+                           known = session.get('known', False))
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -70,5 +78,4 @@ def internal_server_error(e):
 
 
 if __name__ == '__main__':
-    db.create_all()
     manager.run()
