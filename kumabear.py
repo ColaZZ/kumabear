@@ -9,6 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate, MigrateCommand
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -23,7 +24,9 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
+# model
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -42,16 +45,18 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-
+# form
 class NameForm(FlaskForm):
 	name = StringField(u'你的名字是?', validators=[Required()])
 	submit = SubmitField(u'提交')
 
-
+# shell
 def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role)
 manager.add_command("shell", Shell(make_shell_context))
+manager.add_command('db', MigrateCommand)
 
+# views
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
