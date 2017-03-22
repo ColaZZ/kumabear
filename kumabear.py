@@ -2,7 +2,7 @@
 import os
 
 from flask import Flask, render_template, session, redirect, url_for
-from flask_script import Manager
+from flask_script import Manager, Shell
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
@@ -47,6 +47,10 @@ class NameForm(FlaskForm):
 	name = StringField(u'你的名字是?', validators=[Required()])
 	submit = SubmitField(u'提交')
 
+
+def make_shell_context():
+    return dict(app=app, db=db, User=User, Role=Role)
+manager.add_command("shell", Shell(make_shell_context))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
