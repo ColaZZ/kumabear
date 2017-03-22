@@ -1,4 +1,5 @@
-import os
+#coding=utf-8
+
 from flask import Flask, render_template, session, redirect, url_for
 from flask_script import Manager, Shell
 from flask_bootstrap import Bootstrap
@@ -10,29 +11,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 # from flask_mail import Mail, Message
 
-basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['KUMABEAR_MAIL_SUBJECT_PREFIX'] = '[Kumabear]'
-app.config['KUMABEAR_MAIL_SENDER'] = 'Kumabear Admin <kumabear@example.com>'
-app.config['KUMABEAR_ADMIN'] = os.environ.get('KUMABEAR_ADMIN')
 
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-mail = Mail(app)
+# mail = Mail(app)
 
 
 class Role(db.Model):
