@@ -2,12 +2,16 @@
 <meta charset="utf-8">
 <html lang="zh-CN">
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Kumabear - 登录{% endblock %}
 
 {% block page_content %}
     <div class="page-header">
     <h1>登录</h1>
+    </div>
+    <div class="col-md-4">
+    {{ wtf.quick_form(form) }}
     </div>
 {% endblock %}
 </html>
