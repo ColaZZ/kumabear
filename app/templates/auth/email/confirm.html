@@ -1,0 +1,7 @@
+<meta charset="UTF-8">
+<p>亲爱的 {{ user.username }},</p>
+<p>欢迎来到Kumabear!</p>
+<p>点击下面的链接确认你的账户:</p>
+<p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
+<p>真诚的.</p>
+<p>Kumabear团队</p>

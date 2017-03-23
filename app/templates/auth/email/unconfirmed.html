@@ -1,0 +1,21 @@
+<meta charset="UTF-8">
+{% extends "base.html" %}
+
+{% block title %}Kumabear - 确认账户{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>
+        你好, {{ current_user.username }}!
+    </h1>
+    <h3>你还没有确认账户</h3>
+    <p>
+        在你进入网站之前,清闲确认账户.
+        你的收件箱里面,应该有一封带有确认地址的邮件.
+    </p>
+    <p>
+        再发送一次确认邮件?
+        <a href="{{ url_for('auth.resend_confirmation') }}">点击这里</a>
+    </p>
+</div>
+{% endblock %}
