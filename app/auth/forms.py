@@ -19,7 +19,7 @@ class RegistrationForm(Form):
                                                                                      'Username must have one letters',
                                                                                      'numbers, dots or uderscores')])
     password = PasswordField(u'密码', validators=[
-        DataRequired(), Length(1, 64), EqualTo('password2', message='Passwords must match.')])
+        DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
     password2 = PasswordField(u'确认密码', validators=[DataRequired()])
     submit = SubmitField(u'注册')
 
@@ -32,3 +32,10 @@ class RegistrationForm(Form):
             raise ValidationError('Username already registered.')
 
 
+# 修改密码
+class ChangePasswordForm(Form):
+    old_password = PasswordField(u'旧密码', validators=[DataRequired()])
+    password = PasswordField(u'新密码', validators=[
+        DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
+    password2 = PasswordField(u'确认密码', validators=[DataRequired()])
+    submit = SubmitField(u'注册')
