@@ -39,3 +39,21 @@ class ChangePasswordForm(Form):
         DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
     password2 = PasswordField(u'确认密码', validators=[DataRequired()])
     submit = SubmitField(u'注册')
+
+
+# 重设密码
+class PasswordResetRequestForm(Form):
+    email = StringField(u'Email', validators=[DataRequired(), Length(1, 64), Email()])
+    submit = SubmitField(u'重设密码')
+
+
+class PasswordResetForm(Form):
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
+    password = PasswordField(u'新密码', validators=[
+        DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
+    password2 = PasswordField(u'确认密码', validators=[DataRequired()])
+    submit = SubmitField(u'重设密码')
+
+    def validate_email(self, field):
+        if not User.query.filter_by(email=field.data).first():
+            raise ValidationError(u'未知的email地址')
