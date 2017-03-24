@@ -57,3 +57,14 @@ class PasswordResetForm(Form):
     def validate_email(self, field):
         if not User.query.filter_by(email=field.data).first():
             raise ValidationError(u'未知的email地址')
+
+# 更改email
+class ChangeEmailForm(Form):
+    email = StringField(u'email', validators=[DataRequired(), Length(1, 64), Email()])
+    password = PasswordField(u'密码', validators=[DataRequired()])
+    submit = SubmitField(u'更改email地址')
+
+    def validate_email(self, field):
+        if not User.query.filter_by(password=field.data).first():
+            raise ValidationError(u'email已经注册过了')
+

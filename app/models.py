@@ -53,15 +53,38 @@ class User(UserMixin, db.Model):
         return True
 
     def generate_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'reset': self.id})
+
+    def reset_password(self, token, new_password):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
             return False
-        if data.get('reset') !=self.id:
+        if data.get('reset') != self.id:
             return False
         self.password = new_password
         db.session.add(self)
+        return True
+
+    def generate_email_change_token(self, exporation=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'change_email':self.id, 'new_email':new_email})
+
+    def reset_email(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('change_email') != self.id:
+            return False
+        if self.query.filter_by(email=new_email).first():
+            return False
+        self.email = new_email
+        db.session.add(self)
+
         return True
 
     def __repr__(self):

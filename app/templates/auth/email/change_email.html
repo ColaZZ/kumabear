@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html lang="zh-CN">
+<p>亲爱的 {{ user.username }},</p>
+<p>确认你的新email地址,<a href="{{ url_for('auth.change_email',token=token, _external=True) }}"></a></p>
+<p>或者,你可以黏贴一下链接到浏览器:</p>
+<p>{{ url_for('auth.change_email', token=token, _external=True) }}</p>
+<p>真诚的</p>
+<p>Kumabear团队</p>
+</html>
