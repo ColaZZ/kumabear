@@ -1,6 +1,9 @@
 # coding=utf-8
 import unittest
-from app.models import User
+import time
+from app import create_app, db
+from app.models import User, AnonymousUser, Role, Permission
+
 
 class UserModelTestCase(unittest.TestCase):
     def setUP(self):
@@ -19,7 +22,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u.password_hash is not None)
 
     def test_no_password_getter(self):
-        u = user(password='cat')
+        u = User(password='cat')
         with self.assertRaises(AttributeError):
             u.password
 
@@ -78,5 +81,14 @@ class UserModelTestCase(unittest.TestCase):
         token = u2.generate_email_change_token('john@example.com')
         self.assertFalse(u2.change_email(token))
         self.assertTrue(u2.email == 'susan@example.org')
+
+    def test_roles_and_permissions(self):
+        u = User(email='john@example.com', password='cat')
+        self.assertTrue(u.can(Permission.WRITE_ARTICLES))
+        self.assertTrue(u.can(Permission.MODERATE_COMMETNS))
+
+    def test_anonymous_user(self):
+        u = AnonymousUser()
+        self.assertTrue(u.can(Permission.FOLLOW))
 
 
