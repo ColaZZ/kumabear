@@ -23,6 +23,7 @@
             {% endif %}
             {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
             <p>Member since{{ moment(user.member_since).format('L') }}. Last seen{{ moment(user.last_seen).formNow() }}</p>
+            <p>{{ user.posts.count() }} 篇文章.</p>
             <p>
                 {% if user == current_user %}
                     <a class="'btn-default" href="{{ url_for('.edit_profile') }}">编辑资料</a>
@@ -33,6 +34,8 @@
             </p>
         </div>
     </div>
+    <h3>Posts by {{ user.username }}</h3>
+    {% include '_post.html' %}
 {% endblock %}
 
 
