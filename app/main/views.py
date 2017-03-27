@@ -98,4 +98,10 @@ def index():
     return render_template('index.html', form=form, posts=posts)
 
 
+@main.route('/post/<int:id>')
+def post(id):
+    post = Post.query.get_or_404(id)
+    return render_template('post.html', post=[post])
+
+
 
