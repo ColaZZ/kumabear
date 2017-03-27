@@ -205,11 +205,11 @@ def load_user(user_id):
 
 
 class Post(db.Model):
-    __table__ = 'posts'
+    __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # ForgeryPy生成虚拟博客文章
     @staticmethod

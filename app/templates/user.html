@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <html lang="zh-cn">
 {% extends "base.html" %}
+{% import "_macro.html" %}
 
 {% block title %}Kumabear - {{ user.username }}{% endblock %}
 
@@ -36,6 +37,11 @@
     </div>
     <h3>Posts by {{ user.username }}</h3>
     {% include '_post.html' %}
+    {% if pagination %}
+    <div class="pagination">
+    {{ macros.pagination_widget(pagination, '.user', username=user.username) }}
+    </div>
+{   % endif %}
 {% endblock %}
 
 

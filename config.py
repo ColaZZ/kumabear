@@ -9,7 +9,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # KUMABEAR_MAIL_SUBJECT_PREFIX = '[Kumabear]'
     # KUMABEAR_MAIL_SENDER = 'Kumabear Admin <kumabear@example.com>'
-    # KUMABEAR_ADMIN = os.environ.get('KUMABEAR_ADMIN')
+    KUMABEAR_ADMIN = os.environ.get('KUMABEAR_ADMIN')
+    FLASKY_POSTS_PER_PAGE = 20
 
     @staticmethod
     def init_app(app):
