@@ -11,6 +11,7 @@ class Config:
     # KUMABEAR_MAIL_SENDER = 'Kumabear Admin <kumabear@example.com>'
     KUMABEAR_ADMIN = os.environ.get('KUMABEAR_ADMIN')
     FLASKY_POSTS_PER_PAGE = 20
+    FLASKY_FOLLOWERS_PER_PAGE = 50
 
     @staticmethod
     def init_app(app):
