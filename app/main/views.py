@@ -232,6 +232,40 @@ def post(id):
 
 
 
+@main.route('/moderate')
+@login_required
+@perimission_required
+def moderate():
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(page, per_page=current_app.config['FLAKS_COMMENTS_PER_PAGE'],
+                                                                           error_out=False)
+    comments = pagination.items
+    return render_template('moderate.html', comments=comments,
+                           pagination=pagination, page=page)
+
+
+@main.route('/moderate/enbled/<int:id>')
+@login_required
+@perimission_required(Permission.MODERATE_COMMETNS)
+def moderate_enable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disable = False
+    db.session.add(comment)
+    return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+@main.route('/moderate/disable/<int:id>')
+@login_required
+@perimission_required
+def moderate_disable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disable = True
+    db.session.add(comment)
+    return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+
+
 
 
 
