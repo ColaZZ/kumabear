@@ -15,9 +15,10 @@ class LoginForm(Form):
 
 class RegistrationForm(Form):
     email = StringField(u'邮件地址', validators=[DataRequired(), Length(1, 64), Email()])
-    username = StringField(u'用户名', validators=[DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-                                                                                     'Username must have one letters',
-                                                                                     'numbers, dots or uderscores')])
+    username = StringField('Username', validators=[
+        DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                          'Usernames must have only letters, '
+                                          'numbers, dots or underscores')])
     password = PasswordField(u'密码', validators=[
         DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
     password2 = PasswordField(u'确认密码', validators=[DataRequired()])

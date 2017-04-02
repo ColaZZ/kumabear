@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html lang="zh-cn">
+{% extends "base.html" %}
+
+{% block title %}KUMABEAR - {{ code }}: {{ name }}{% endblock %}
+
+{% block page_content %}
+    <div class="page-header">
+    <h1>{{ code }}: {{ name }}</h1>
+    <p>{{ description }}</p>
+    </div>
+{% endblock %}
+
+</html>

@@ -3,6 +3,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
@@ -10,13 +11,14 @@ class Config:
     # KUMABEAR_MAIL_SUBJECT_PREFIX = '[Kumabear]'
     # KUMABEAR_MAIL_SENDER = 'Kumabear Admin <kumabear@example.com>'
     KUMABEAR_ADMIN = os.environ.get('KUMABEAR_ADMIN')
-    FLASKY_POSTS_PER_PAGE = 20
-    FLASKY_FOLLOWERS_PER_PAGE = 50
-    FLASKY_COMMENTS_PER_PAGE = 30
+    KUMABEAR_POSTS_PER_PAGE = 20
+    KUMABEAR_FOLLOWERS_PER_PAGE = 50
+    KUMABEAR_COMMENTS_PER_PAGE = 30
 
     @staticmethod
     def init_app(app):
         pass
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

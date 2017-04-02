@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <html lang="zh-cn">
 {% extends "base.html" %}
-{% import "_macro.html" %}
+{% import "_macros.html" as macros %}
 
 {% block title %}Kumabear - {{ user.username }}{% endblock %}
 
@@ -15,7 +15,7 @@
             <p>
                 {% if user.name %}{{ user.name }}{% endif %}
                 {% if user.location %}
-                    Form <a href="maps.google.com/?q={{ user.location }}">{{ user.location }}</a>
+                    来自 <a href="maps.google.com/?q={{ user.location }}">{{ user.location }}</a>
                 {% endif %}
             </p>
             {% endif %}
@@ -23,7 +23,7 @@
                 <p><a href="malito:{{ user.email }}">{{ user.email }}</a></p>
             {% endif %}
             {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-            <p>Member since{{ moment(user.member_since).format('L') }}. Last seen{{ moment(user.last_seen).formNow() }}</p>
+            <p>注册时间:{{ moment(user.member_since).format('L') }}. 上次登录:{{ moment(user.last_seen).fromNow() }}</p>
             <p>{{ user.posts.count() }} 篇文章.{{ user.comments.count() }}篇评论</p>
             <p>
                 {% if user == current_user %}
@@ -41,7 +41,7 @@
                 {% endif %}
                 <a href="{{ url_for('.followers', username=user.username) }}">关注者:<span class="badge">{{ user.followers.count() - 1 }}</span></a>
                 <a href="{{ url_for('.followed_by', username=user.username) }}">被关注:<span class="badge">{{ user.followed.count() - 1 }}</span></a>
-                {% if ccurrent_user.is_authenticated and user != current_user  and user.is_following(current_user) %}
+                {% if current_user.is_authenticated and user != current_user  and user.is_following(current_user) %}
                     | <span class="label label-default">关注</span>
                 {% endif %}
             </p>
@@ -54,12 +54,12 @@
         </div>
     </div>
     <h3>Posts by {{ user.username }}</h3>
-    {% include '_post.html' %}
+    {% include '_posts.html' %}
     {% if pagination %}
     <div class="pagination">
     {{ macros.pagination_widget(pagination, '.user', username=user.username) }}
     </div>
-{   % endif %}
+{% endif %}
 {% endblock %}
 
 

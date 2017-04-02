@@ -5,7 +5,7 @@ from . import main
 from ..models import User, db, Role, Permission, Post, Comment
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from flask_login import current_user, login_required
-from ..decorators import admin_required, perimission_required
+from ..decorators import admin_required, permission_required
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -27,7 +27,7 @@ def index():
     else:
         query = Post.query
     pagination = query.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'],
+        page, per_page=current_app.config['KUMABEAR_POSTS_PER_PAGE'],
         error_out=False
     )
     posts = pagination.items
@@ -41,7 +41,7 @@ def user(username):
         abort(404)
     page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        page, per_page=current_app.config['KUMABEAR_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
     return render_template('user.html', user=user, posts=posts,
@@ -53,9 +53,13 @@ def user(username):
 def edit_profile():
     form = EditProfileForm()
     if form.validate_on_submit():
-        current_user.name = form.name.data
-        current_user.location = form.lcoation.data
-        current_user.about_me = form.about_me.data
+        user.email = form.email.data
+        user.username = form.username.data
+        user.confirmed = form.confirmed.data
+        user.role = Role.query.get(form.role.data)
+        user.name = form.name.data
+        user.location = form.location.data
+        user.about_me = form.about_me.data
         db.session.add(current_user)
         flash(u'你的个人资料已经更新')
         return redirect(url_for('.user', username=current_user.username))
@@ -92,23 +96,25 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=user)
 
 
-@main.route('/', methods=['GET', 'POST'])
-def index():
-    form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
-            form.validate_on_submit():
-        post = Post(body=form.body.data,
-                    author=current_user.__get_current_object())
-        db.session.add(post)
-        return redirect(url_for('.index'))
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('index.html', form=form, posts=posts)
-
-
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html', post=[post])
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=post,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        flash(u'你的评论已经发布了')
+        return redirect(url_for('.post', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1)/current_app.config['FLASK_COMMENTS_PER_PAGE'] + 1
+    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(page,
+                                                                          per_page=current_app.config['KUMABEAR_COMMENTS_PER_PAGE'],
+                                                                          error_out=False)
+    comments = pagination.items
+    return render_template('post.html', post=[post], form=form, comments=comments, pagination=pagination)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -130,7 +136,7 @@ def edit(id):
 
 @main.route('/follow/<username>')
 @login_required
-@perimission_required(Permission.FOLLOW)
+@permission_required(Permission.FOLLOW)
 def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -146,7 +152,7 @@ def follow(username):
 
 @main.route('/unfollow/<username>')
 @login_required
-@perimission_required(Permission.FOLLOW)
+@permission_required(Permission.FOLLOW)
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -168,7 +174,7 @@ def followers(username):
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
-        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['KUMABEAR_FOLLOWERS_PER_PAGE'],
         error_out=False)
     follows = [{'user':item.follower, 'timestamp':item.timestamp}
                for item in pagination.items]
@@ -177,7 +183,7 @@ def followers(username):
                            follows=follows)
 
 
-@main.route('/followed-by/<username')
+@main.route('/followed-by/<username>')
 def followed_by(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -185,7 +191,7 @@ def followed_by(username):
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = user.followers.paginate(
-        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        page, per_page=current_app.config['KUMABEAR_FOLLOWERS_PER_PAGE'],
         error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp}
                for item in pagination.items]
@@ -210,31 +216,9 @@ def show_followed():
     return resp
 
 
-@main.route('/post/<int:id>', methods=['GET', 'POST'])
-def post(id):
-    post = Post.query.get_or_404(id)
-    form = CommentForm()
-    if form.validate_on_submit():
-        comment = Comment(body=form.body.data,
-                          post=post,
-                          author=current_user._get_current_object())
-        db.session.add(comment)
-        flash(u'你的评论已经发布了')
-        return redirect(url_for('.post', id=post.id, page=-1))
-    page = request.args.get('page', 1, type=int)
-    if page == -1:
-        page = (post.comments.count() - 1)/current_app.config['FLASK_COMMENTS_PER_PAGE'] + 1
-    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(page,
-                                                                          per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
-                                                                          error_out=False)
-    comments = pagination.items
-    return render_template('post.html', post=[post], form=form, comments=comments, pagination=pagination)
-
-
-
 @main.route('/moderate')
 @login_required
-@perimission_required
+@permission_required(Permission.MODERATE_COMMENTS)
 def moderate():
     page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(page, per_page=current_app.config['FLAKS_COMMENTS_PER_PAGE'],
@@ -244,9 +228,9 @@ def moderate():
                            pagination=pagination, page=page)
 
 
-@main.route('/moderate/enbled/<int:id>')
+@main.route('/moderate/enable/<int:id>')
 @login_required
-@perimission_required(Permission.MODERATE_COMMETNS)
+@permission_required(Permission.MODERATE_COMMENTS)
 def moderate_enable(id):
     comment = Comment.query.get_or_404(id)
     comment.disable = False
@@ -256,7 +240,7 @@ def moderate_enable(id):
 
 @main.route('/moderate/disable/<int:id>')
 @login_required
-@perimission_required
+@permission_required
 def moderate_disable(id):
     comment = Comment.query.get_or_404(id)
     comment.disable = True
