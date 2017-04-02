@@ -6,7 +6,7 @@ from ..models import User
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 from .. import db
-# from ..email import send_mail
+from ..email import send_email
 
 
 @auth.before_app_request
@@ -53,9 +53,9 @@ def register():
     if form.validate_on_submit():
         user = User(email=form.email.data, username=form.username.data,password=form.password.data)
         db.session.add(user)
-        # token = user.generate_confirmation_token()
-        # send_email(user.email, u'确认你的账户', 'auth/email/confirm', user=user, token=token)
-        # flash(u'一封邮件已经发送到你的邮箱')
+        token = user.generate_confirmation_token()
+        send_email(user.email, u'确认你的账户', 'auth/email/confirm', user=user, token=token)
+        flash(u'一封邮件已经发送到你的邮箱')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
