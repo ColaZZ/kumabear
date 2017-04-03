@@ -1,19 +1,19 @@
 # coding=utf-8
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     email = StringField(u'邮件地址', validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField(u'密码', validators=[DataRequired()])
     remember_me = BooleanField(u'记住我(保持登录)')
     submit = SubmitField(u'登录')
 
 
-class RegistrationForm(Form):
+class RegistrationForm(FlaskForm):
     email = StringField(u'邮件地址', validators=[DataRequired(), Length(1, 64), Email()])
     username = StringField('Username', validators=[
         DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
@@ -34,7 +34,7 @@ class RegistrationForm(Form):
 
 
 # 修改密码
-class ChangePasswordForm(Form):
+class ChangePasswordForm(FlaskForm):
     old_password = PasswordField(u'旧密码', validators=[DataRequired()])
     password = PasswordField(u'新密码', validators=[
         DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
@@ -43,12 +43,12 @@ class ChangePasswordForm(Form):
 
 
 # 重设密码
-class PasswordResetRequestForm(Form):
+class PasswordResetRequestForm(FlaskForm):
     email = StringField(u'Email', validators=[DataRequired(), Length(1, 64), Email()])
     submit = SubmitField(u'重设密码')
 
 
-class PasswordResetForm(Form):
+class PasswordResetForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField(u'新密码', validators=[
         DataRequired(), Length(1, 64), EqualTo('password2', message=u'两次密码必须一致.')])
@@ -59,8 +59,9 @@ class PasswordResetForm(Form):
         if not User.query.filter_by(email=field.data).first():
             raise ValidationError(u'未知的email地址')
 
+
 # 更改email
-class ChangeEmailForm(Form):
+class ChangeEmailForm(FlaskForm):
     email = StringField(u'email', validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField(u'密码', validators=[DataRequired()])
     submit = SubmitField(u'更改email地址')

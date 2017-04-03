@@ -8,7 +8,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     KUMABEAR_MAIL_SUBJECT_PREFIX = '[Kumabear]'
-    KUMABEAR_MAIL_SENDER = '312983512@qq.com'
+    KUMABEAR_MAIL_SENDER = 'zlinxx1992@gmail.com'
     KUMABEAR_ADMIN = os.environ.get('KUMABEAR_ADMIN')
     KUMABEAR_POSTS_PER_PAGE = 20
     KUMABEAR_FOLLOWERS_PER_PAGE = 50
@@ -16,8 +16,8 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     KUMABEAR_SLOW_DB_QUERY_TIME = 0.5
     SSL_DISABLE = False
-    MAIL_SERVER = 'smtp.qq.com'
-    MAIL_PORT = 25
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
