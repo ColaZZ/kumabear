@@ -6,7 +6,7 @@ from ..models import User, db, Role, Permission, Post, Comment
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from flask_login import current_user, login_required
 from ..decorators import admin_required, permission_required
-from flask.ext.sqlalchemy import get_debug_queries
+from flask_sqlalchemy import get_debug_queries
 
 
 @main.after_app_request
